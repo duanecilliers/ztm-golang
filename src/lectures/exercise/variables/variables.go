@@ -25,35 +25,19 @@ package main
 import "fmt"
 
 func main() {
-	var myName = "Duane"
-	fmt.Println("My name is", myName)
+	var color = "blue"
+	fmt.Println("My favorite color is", color)
 
-	var name string = "Kathy"
-	fmt.Println("My name = ", name)
+	var age, birthYear = 30, 1990;
+	println("I am", age, "years old and was born in", birthYear)
 
-	userName := "admin"
-	fmt.Println("User name = ", userName)
-
-	var sum int
-	fmt.Println("Sum = ", sum)
-
-	part1, other := 1, 5
-	fmt.Println("Part = ", part1, "Other = ", other)
-
-	part2, other := 2, 0
-	fmt.Println("Part = ", part2, "Other = ", other)
-
-	sum = part1 + part2
-	fmt.Println("Sum = ", sum)
-
-	var(
-		lessonName = "Variables"
-		lessonType = "Demo"
+	var (
+		firstInitial = "D"
+		lastInitial = "C"
 	)
-	
-	fmt.Println("lessonName=", lessonName)
-	fmt.Println("lessonType=", lessonType)
+	fmt.Println("My initials are", firstInitial, lastInitial)
 
-	word1, word2, _ := "Hello", "World", "!"
-	fmt.Println(word1, word2)
+	var ageInDays int
+	ageInDays = 365 * age
+	fmt.Println("I am", ageInDays, "days old")
 }
