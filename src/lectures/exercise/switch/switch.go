@@ -21,11 +21,11 @@ func main() {
 		classification = "newborn"
 	case age >= 1 && age <= 3:
 		classification = "toddler"
-	case age >= 4 && age <= 12:
+	case age < 13:
 		classification = "child"
-	case age >= 13 && age <= 17:
+	case age < 18:
 		classification = "teenager"
-	case age >= 18:
+	default:
 		classification = "adult"
 	}
 
