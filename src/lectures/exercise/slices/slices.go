@@ -27,7 +27,10 @@ func printContents(assembly []Part) {
 }
 
 func main() {
-	assembly := []Part{"Wrench", "Screw driver", "Drill"}
+	assembly := make([]Part, 3)
+	assembly[0] = "Wrench"
+	assembly[1] = "Screw driver"
+	assembly[2] = "Drill"
 	printContents(assembly)
 	assembly = append(assembly, "Torch", "Door")
 	printContents(assembly)
