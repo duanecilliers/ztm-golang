@@ -29,53 +29,50 @@ const (
 	Retired     = 3
 )
 
-func displayServerInfo(serverMap map[string]int) {
-	var totalServers,
-		onlineServers,
-		offlineServers,
-		maintenanceServers,
-		retiredServers int
+func displayServerInfo(servers map[string]int) {
+	fmt.Println("\n There are", len(servers), "servers")
 
-	for _, status := range serverMap {
-		totalServers += 1
+	stats := make(map[int]int)
+	for _, status := range servers {
 		switch status {
 		case Online:
-			onlineServers += 1
+			stats[Online] += 1
 		case Offline:
-			offlineServers += 1
+			stats[Offline] += 1
 		case Maintenance:
-			maintenanceServers += 1
+			stats[Maintenance] += 1
 		case Retired:
-			retiredServers += 1
+			stats[Retired] += 1
+		default:
+			panic("unhandled server status")
 		}
 	}
 
-	fmt.Println("Total servers:", totalServers)
-	fmt.Println("Online servers:", onlineServers)
-	fmt.Println("Offline servers:", offlineServers)
-	fmt.Println("Maintenance servers:", maintenanceServers)
-	fmt.Println("Retired servers:", retiredServers)
+	fmt.Println("Online servers:", stats[Online])
+	fmt.Println("Offline servers:", stats[Offline])
+	fmt.Println("Maintenance servers:", stats[Maintenance])
+	fmt.Println("Retired servers:", stats[Retired])
 }
 
 func main() {
 	servers := []string{"darkstar", "aiur", "omicron", "w359", "baseline"}
-	serverMap := make(map[string]int)
+	serverStatus := make(map[string]int)
 	for i := 0; i < len(servers); i++ {
 		server := servers[i]
-		serverMap[server] = Online
+		serverStatus[server] = Online
 	}
 
-	displayServerInfo(serverMap)
+	displayServerInfo(serverStatus)
 	fmt.Println()
 	
-	serverMap["darkstart"] = Retired
-	serverMap["aiur"] = Offline
-	displayServerInfo(serverMap)
+	serverStatus["darkstart"] = Retired
+	serverStatus["aiur"] = Offline
+	displayServerInfo(serverStatus)
 	fmt.Println()
-	
-	for name := range serverMap {
-		serverMap[name] = Maintenance
+
+	for name := range serverStatus {
+		serverStatus[name] = Maintenance
 	}
 	
-	displayServerInfo(serverMap)
+	displayServerInfo(serverStatus)
 }
