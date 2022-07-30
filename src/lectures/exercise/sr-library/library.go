@@ -19,8 +19,65 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+type Member struct {
+	name string
+}
+type Check struct {
+	time time.Time
+	by Member
+}
+type Book struct {
+	checkout []Check
+	checkin []Check
+}
+
+type Library struct {
+	members map[string]Member
+	books map[string]Book
+}
+
+func checkin(bookName string, member Member, library *Library) {
+	book := library.books[bookName]
+	book.checkin = append(library.books[bookName].checkin, Check{time: time.Now(), by: member})
+	library.books[bookName] = book
+}
+
+func checkout(bookName string, member Member, library *Library) {
+	book := library.books[bookName]
+	book.checkout = append(library.books[bookName].checkout, Check{time: time.Now(), by: member})
+	library.books[bookName] = book
+}
+
+func printLibrary(library *Library) {
+	fmt.Println("Library:", *library)
+}
 
 func main() {
+	books := make(map[string]Book)
+	members := make(map[string]Member)
 
+	books["Absalom, Absalom!"] = Book{}
+	books["A Time to Kill"] = Book{}
+	books["The House of Mirth"] = Book{}
+	books["East of Eden"] = Book{}
+
+	members["Anne"] = Member{name: "Anne"}
+	members["Jake"] = Member{name: "Jake"}
+	members["Dina"] = Member{name: "Dina"}
+
+	library := Library{books: books, members: members}
+	printLibrary(&library)
+
+	checkout("Absalom, Absalom!", members["Anne"], &library)
+	fmt.Println("After checkout:")
+	printLibrary(&library)
+
+	checkin("Absalom, Absalom!", members["Anne"], &library)
+	fmt.Println("After checkin:")
+	printLibrary(&library)
 }
