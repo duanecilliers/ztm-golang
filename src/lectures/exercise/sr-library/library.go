@@ -24,60 +24,138 @@ import (
 	"time"
 )
 
+type Title string
+type Name string
+
+type LendAudit struct {
+	checkOut time.Time
+	checkIn time.Time
+}
+
 type Member struct {
-	name string
+	name Name
+	books map[Title]LendAudit
 }
-type Check struct {
-	time time.Time
-	by Member
-}
-type Book struct {
-	checkout []Check
-	checkin []Check
+
+type BookEntry struct {
+	total int
+	lent int
 }
 
 type Library struct {
-	members map[string]Member
-	books map[string]Book
+	members map[Name]Member
+	books map[Title]BookEntry
 }
 
-func checkin(bookName string, member Member, library *Library) {
-	book := library.books[bookName]
-	book.checkin = append(library.books[bookName].checkin, Check{time: time.Now(), by: member})
-	library.books[bookName] = book
+func checkin() {
 }
 
-func checkout(bookName string, member Member, library *Library) {
-	book := library.books[bookName]
-	book.checkout = append(library.books[bookName].checkout, Check{time: time.Now(), by: member})
-	library.books[bookName] = book
+func checkout() {
 }
 
-func printLibrary(library *Library) {
-	fmt.Println("Library:", *library)
+func printMemberAudit(member *Member) {
+	for title, audit := range member.books {
+		var returnTime string
+		if audit.checkIn.IsZero() {
+			returnTime = "not yet returned"
+		} else {
+			returnTime = audit.checkIn.String()
+		}
+		fmt.Println(member.name, ":", title, ":", audit.checkOut.String(), "through", returnTime)
+	}
+}
+
+func printMembersAudit(library *Library) {
+	for _, member := range library.members {
+		printMemberAudit(&member)
+	}
+}
+
+func printLibraryBooks(library *Library) {
+	fmt.Println()
+	for title, book := range library.books {
+		fmt.Println(title, "/ total:", book.total, "/ lent:", book.lent)
+	}
+	fmt.Println()
+}
+
+func checkoutBook(library *Library, title Title, member *Member) bool {
+	book, found := library.books[title]
+	if !found {
+		fmt.Println("book not part of library")
+		return false
+	}
+	if book.lent == book.total {
+		fmt.Println("No more books available to lend")
+		return false
+	}
+
+	book.lent += 1
+	library.books[title] = book
+	member.books[title] = LendAudit{checkOut: time.Now()}
+	return true
+}
+
+func returnBook(library *Library, title Title, member *Member) bool {
+	book, found := library.books[title]
+	if !found {
+		fmt.Println("book not part of library")
+		return false
+	}
+	audit, found := member.books[title]
+	if !found {
+		fmt.Println("Member did not check out this book")
+		return false
+	}
+
+	book.lent -= 1
+	library.books[title] = book
+	audit.checkIn = time.Now()
+	member.books[title] = audit
+	return true
 }
 
 func main() {
-	books := make(map[string]Book)
-	members := make(map[string]Member)
+	library := Library{
+		books: make(map[Title]BookEntry),
+		members: make(map[Name]Member),
+	}
 
-	books["Absalom, Absalom!"] = Book{}
-	books["A Time to Kill"] = Book{}
-	books["The House of Mirth"] = Book{}
-	books["East of Eden"] = Book{}
+	library.books["Absalom, Absalom!"] = BookEntry{
+		total: 4,
+		lent: 0,
+	}
+	library.books["A Time to Kill"] = BookEntry{
+		total: 3,
+		lent: 0,
+	}
+	library.books["The House of Mirth"] = BookEntry{
+		total: 2,
+		lent: 0,
+	}
+	library.books["East of Eden"] = BookEntry{
+		total: 1,
+		lent: 0,
+	}
 
-	members["Anne"] = Member{name: "Anne"}
-	members["Jake"] = Member{name: "Jake"}
-	members["Dina"] = Member{name: "Dina"}
+	library.members["Duane"] = Member{"Duane", make(map[Title]LendAudit)}
+	library.members["Anne"] = Member{"Anne", make(map[Title]LendAudit)}
+	library.members["Jake"] = Member{"Jake", make(map[Title]LendAudit)}
 
-	library := Library{books: books, members: members}
-	printLibrary(&library)
+	fmt.Println("\n Initial:")
+	printLibraryBooks(&library)
+	printMembersAudit(&library)
 
-	checkout("Absalom, Absalom!", members["Anne"], &library)
-	fmt.Println("After checkout:")
-	printLibrary(&library)
+	member := library.members["Duane"]
+	checkedOut := checkoutBook(&library, "Absalom, Absalom!", &member)
+	if checkedOut {
+		printLibraryBooks(&library)
+		printMembersAudit(&library)
+	}
 
-	checkin("Absalom, Absalom!", members["Anne"], &library)
-	fmt.Println("After checkin:")
-	printLibrary(&library)
+	returned := returnBook(&library, "Absalom, Absalom!", &member)
+	if returned {
+		printLibraryBooks(&library)
+		printMembersAudit(&library)
+	}
 }
