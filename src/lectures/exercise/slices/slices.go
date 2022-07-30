@@ -18,5 +18,19 @@ import "fmt"
 
 type Part string
 
+func printContents(assembly []Part) {
+	fmt.Println()
+	for i := 0; i < len(assembly); i++ {
+		item := assembly[i]
+		fmt.Println(item)
+	}
+}
+
 func main() {
+	assembly := []Part{"Wrench", "Screw driver", "Drill"}
+	printContents(assembly)
+	assembly = append(assembly, "Torch", "Door")
+	printContents(assembly)
+	assembly = assembly[3:]
+	printContents(assembly)
 }
